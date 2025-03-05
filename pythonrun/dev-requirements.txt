@@ -1,0 +1,7 @@
+black
+isort
+twine
+build
+flake8
+pytest
+pytest-cov 

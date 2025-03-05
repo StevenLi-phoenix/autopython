@@ -1,0 +1,7 @@
+include LICENSE
+include README.md
+include pythonrun/__init__.py
+include pythonrun/main.py
+include pythonrun/cli.py
+recursive-include pythonrun *
+recursive-include tests * 

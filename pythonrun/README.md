@@ -1,4 +1,4 @@
-# autopython
+# pythonrun
 
 自动导入和安装Python模块的工具
 
@@ -17,21 +17,21 @@
 ## 安装
 
 ```bash
-pip install autopython
+pip install pythonrun
 ```
 
 或者从源码安装：
 
 ```bash
-git clone https://github.com/StevenLi-phoenix/autopython.git
-cd autopython
+git clone https://github.com/StevenLi-phoenix/pythonrun.git
+cd pythonrun
 pip install -e .
 ```
 
 ## 使用方法
 
 ```bash
-autopython your_script.py [arg1 arg2 ...]
+pythonrun your_script.py [arg1 arg2 ...]
 ```
 
 ### 示例
@@ -48,10 +48,10 @@ plt.title('Random Data')
 plt.show()
 ```
 
-如果你的系统没有安装numpy或matplotlib，使用autopython会自动安装它们：
+如果你的系统没有安装numpy或matplotlib，使用pythonrun会自动安装它们：
 
 ```bash
-autopython example.py
+pythonrun example.py
 ```
 
 首次运行时，会询问一些配置选项:
@@ -59,7 +59,7 @@ autopython example.py
 1. 是否默认自动安装缺少的包？(y/n)
 2. 是否在检测到新版本时自动更新pip？(y/n)
 
-配置会保存在 `~/.autopython/config.json` 文件中，您可以随时手动修改。
+配置会保存在 `~/.pythonrun/config.json` 文件中，您可以随时手动修改。
 
 ### 支持的功能
 
@@ -73,7 +73,7 @@ autopython example.py
 
 ### 处理requirements.txt
 
-AutoPython会自动检测脚本所在目录下是否存在requirements.txt文件，并尝试安装其中的依赖：
+pythonrun会自动检测脚本所在目录下是否存在requirements.txt文件，并尝试安装其中的依赖：
 
 ```bash
 # 目录结构:
@@ -82,12 +82,12 @@ AutoPython会自动检测脚本所在目录下是否存在requirements.txt文件
 #  └── requirements.txt
 
 # 自动安装requirements.txt中的依赖并运行main.py
-autopython project/main.py
+pythonrun project/main.py
 ```
 
 ### 递归导入支持
 
-AutoPython支持处理递归导入情况。例如，如果main.py导入了helper.py，而helper.py又导入了其他模块，AutoPython会递归处理这些导入：
+pythonrun支持处理递归导入情况。例如，如果main.py导入了helper.py，而helper.py又导入了其他模块，pythonrun会递归处理这些导入：
 
 ```python
 # main.py
@@ -108,10 +108,10 @@ def process_data(df):
     plt.show()
 ```
 
-使用AutoPython运行main.py会自动安装所有需要的依赖（pandas, matplotlib, seaborn）：
+使用pythonrun运行main.py会自动安装所有需要的依赖（pandas, matplotlib, seaborn）：
 
 ```bash
-autopython main.py
+pythonrun main.py
 ```
 
 ## 开发指南
@@ -131,8 +131,8 @@ python -m unittest discover -s tests
 ### 代码格式化
 
 ```bash
-black autopython tests
-isort autopython tests
+black pythonrun tests
+isort pythonrun tests
 ```
 
 ### 构建包
@@ -155,8 +155,8 @@ python make_release.py --production
 
 ## 环境变量
 
-- `AUTOPYTHON_CONFIG_DIR`: 配置目录路径，默认为 `~/.autopython`
-- `AUTOPYTHON_CONFIG_FILE`: 配置文件路径，默认为 `~/.autopython/config.json`
+- `PYTHONRUN_CONFIG_DIR`: 配置目录路径，默认为 `~/.pythonrun`
+- `PYTHONRUN_CONFIG_FILE`: 配置文件路径，默认为 `~/.pythonrun/config.json`
 
 ## 贡献
 

@@ -1,6 +1,6 @@
 Metadata-Version: 2.2
 Name: pythonrun
-Version: 0.1.1
+Version: 0.1.2
 Summary: 自动导入和安装Python模块的工具
 Home-page: https://github.com/StevenLi-phoenix/autopython
 Author: lishuyu
@@ -44,6 +44,8 @@ Dynamic: summary
 
 - 自动检测Python脚本中导入的模块
 - 自动安装缺少的依赖包
+- 检测和安装项目目录中的requirements.txt文件
+- 支持递归处理Python文件之间的导入关系
 - 处理 `if __name__ == "__main__"` 的情况
 - 支持命令行参数传递
 - 安装失败时搜索相关包并提供安装建议
@@ -105,6 +107,49 @@ autopython example.py
 - 传递命令行参数到目标脚本
 - 安装失败时搜索相关包并提供安装建议
 - 配置是否自动安装包和自动更新pip
+
+### 处理requirements.txt
+
+AutoPython会自动检测脚本所在目录下是否存在requirements.txt文件，并尝试安装其中的依赖：
+
+```bash
+# 目录结构:
+# project/
+#  ├── main.py
+#  └── requirements.txt
+
+# 自动安装requirements.txt中的依赖并运行main.py
+autopython project/main.py
+```
+
+### 递归导入支持
+
+AutoPython支持处理递归导入情况。例如，如果main.py导入了helper.py，而helper.py又导入了其他模块，AutoPython会递归处理这些导入：
+
+```python
+# main.py
+from helper import process_data
+import pandas as pd
+
+df = pd.DataFrame(...)
+process_data(df)
+```
+
+```python
+# helper.py
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+def process_data(df):
+    sns.scatterplot(data=df)
+    plt.show()
+```
+
+使用AutoPython运行main.py会自动安装所有需要的依赖（pandas, matplotlib, seaborn）：
+
+```bash
+autopython main.py
+```
 
 ## 开发指南
 
