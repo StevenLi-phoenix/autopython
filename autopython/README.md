@@ -9,6 +9,7 @@
 - 处理 `if __name__ == "__main__"` 的情况
 - 支持命令行参数传递
 - 安装失败时搜索相关包并提供安装建议
+- 配置功能，可以设置是否自动安装包和更新pip
 
 ## 安装
 
@@ -19,7 +20,7 @@ pip install autopython
 或者从源码安装：
 
 ```bash
-git clone https://github.com/lishuyu/autopython.git
+git clone https://github.com/StevenLi-phoenix/autopython.git
 cd autopython
 pip install -e .
 ```
@@ -50,29 +51,12 @@ plt.show()
 autopython example.py
 ```
 
-输出：
+首次运行时，会询问一些配置选项:
 
-```
-正在安装缺失的依赖包: numpy
-正在安装缺失的依赖包: matplotlib
-[图表显示]
-```
+1. 是否默认自动安装缺少的包？(y/n)
+2. 是否在检测到新版本时自动更新pip？(y/n)
 
-如果安装失败，autopython会搜索相关包并提供安装建议：
-
-```
-正在安装缺失的依赖包: some-package
-安装包 some-package 失败！
-
-正在搜索与 some-package 相关的包...
-找到以下相关包，您可以尝试手动安装：
-  - some-package-lib (版本: 1.2.3) - 实用的Python包
-  - another-package
-
-安装命令: python -m pip install some-package
-
-是否继续执行代码?(y/n): 
-```
+配置会保存在 `~/.autopython/config.json` 文件中，您可以随时手动修改。
 
 ### 支持的功能
 
@@ -82,6 +66,51 @@ autopython example.py
 - 支持 `if __name__ == "__main__"` 结构
 - 传递命令行参数到目标脚本
 - 安装失败时搜索相关包并提供安装建议
+- 配置是否自动安装包和自动更新pip
+
+## 开发指南
+
+### 安装开发依赖
+
+```bash
+pip install -r dev-requirements.txt
+```
+
+### 运行测试
+
+```bash
+python -m unittest discover -s tests
+```
+
+### 代码格式化
+
+```bash
+black autopython tests
+isort autopython tests
+```
+
+### 构建包
+
+```bash
+python -m build
+```
+
+### 发布到TestPyPI
+
+```bash
+python make_release.py
+```
+
+### 发布到PyPI
+
+```bash
+python make_release.py --production
+```
+
+## 环境变量
+
+- `AUTOPYTHON_CONFIG_DIR`: 配置目录路径，默认为 `~/.autopython`
+- `AUTOPYTHON_CONFIG_FILE`: 配置文件路径，默认为 `~/.autopython/config.json`
 
 ## 贡献
 

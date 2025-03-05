@@ -4,6 +4,12 @@
 测试parse_imports功能
 """
 import unittest
+import os
+import sys
+
+# 临时修改sys.path以导入autopython模块
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from autopython.main import parse_imports
 
 class TestParseImports(unittest.TestCase):

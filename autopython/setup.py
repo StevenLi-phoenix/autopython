@@ -2,19 +2,24 @@
 # -*- coding: utf-8 -*-
 
 from setuptools import setup, find_packages
+import re
+
+# 从__init__.py中读取版本号
+with open("autopython/__init__.py", "r", encoding="utf-8") as f:
+    version = re.search(r'__version__ = "(.*?)"', f.read()).group(1)
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(
-    name="autopython",
-    version="0.1.1",
+    name="pythonrun",
+    version=version,
     author="lishuyu",
-    author_email="example@example.com",
+    author_email="premix-styles.7g@icloud.com",
     description="自动导入和安装Python模块的工具",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/lishuyu/autopython",
+    url="https://github.com/StevenLi-phoenix/autopython",
     packages=find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
@@ -37,11 +42,11 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "autopython=autopython.main:main",
+            "pythonrun=autopython.main:main",
         ],
     },
     project_urls={
-        "Bug Reports": "https://github.com/lishuyu/autopython/issues",
-        "Source": "https://github.com/lishuyu/autopython",
+        "Bug Reports": "https://github.com/StevenLi-phoenix/autopython/issues",
+        "Source": "https://github.com/StevenLi-phoenix/autopython",
     },
 ) 

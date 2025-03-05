@@ -24,8 +24,8 @@ logging.basicConfig(
 logger = logging.getLogger('autopython')
 
 # 配置文件路径
-CONFIG_DIR = os.path.join(str(Path.home()), '.autopython')
-CONFIG_FILE = os.path.join(CONFIG_DIR, 'config.json')
+CONFIG_DIR = os.environ.get('AUTOPYTHON_CONFIG_DIR', os.path.join(str(Path.home()), '.autopython'))
+CONFIG_FILE = os.environ.get('AUTOPYTHON_CONFIG_FILE', os.path.join(CONFIG_DIR, 'config.json'))
 
 # 标准库列表
 STDLIB_MODULES = set(sys.builtin_module_names)
@@ -151,63 +151,12 @@ def search_package(package_name: str) -> List[Dict]:
         # 尝试导入requests，如果没有安装则跳过搜索
         import requests
         try:
-            # 常见的拼写错误模式
-            common_typos = {
-                # 常见拼写错误替换
-                'nump': 'numpy',
-                'pands': 'pandas',
-                'mathplotlib': 'matplotlib',
-                'scipi': 'scipy',
-                'opencv': 'opencv-python',
-                'sk': 'scikit',
-                'tensorflow': 'tensorflow',
-                'pytorch': 'torch',
-                'beautifulsoup': 'beautifulsoup4',
-                'bs': 'beautifulsoup4',
-                'req': 'requests',
-                'pil': 'pillow',
-                'yaml': 'pyyaml',
-            }
+            # 使用PyPI API搜索包
+            search_url = f"https://pypi.org/pypi/{package_name}/json"
+            response = requests.get(search_url, timeout=5)
             
-            # 检查是否是常见的拼写错误
-            if package_name.lower() in common_typos:
-                suggested_name = common_typos[package_name.lower()]
-                logger.info(f"您可能是指 {suggested_name}? 尝试使用正确的包名。")
-                # 尝试获取建议包的信息
-                suggested_url = f"https://pypi.org/pypi/{suggested_name}/json"
-                response = requests.get(suggested_url, timeout=5)
-                if response.status_code == 200:
-                    data = response.json()
-                    return [{
-                        'name': data['info']['name'],
-                        'version': data['info']['version'],
-                        'summary': data['info']['summary'],
-                        'is_suggestion': True,
-                        'original_name': package_name
-                    }]
-            
-            # 使用莱文斯坦距离找出相似的包名
-            def levenshtein_distance(s1, s2):
-                if len(s1) < len(s2):
-                    return levenshtein_distance(s2, s1)
-                if len(s2) == 0:
-                    return len(s1)
-                previous_row = range(len(s2) + 1)
-                for i, c1 in enumerate(s1):
-                    current_row = [i + 1]
-                    for j, c2 in enumerate(s2):
-                        insertions = previous_row[j + 1] + 1
-                        deletions = current_row[j] + 1
-                        substitutions = previous_row[j] + (c1 != c2)
-                        current_row.append(min(insertions, deletions, substitutions))
-                    previous_row = current_row
-                return previous_row[-1]
-            
-            # 使用PyPI的JSON API搜索包
-            url = f"https://pypi.org/pypi/{package_name}/json"
-            response = requests.get(url, timeout=5)
+            # 如果直接找到了包，返回
             if response.status_code == 200:
-                # 包存在，直接返回这个包的信息
                 data = response.json()
                 return [{
                     'name': data['info']['name'],
@@ -254,6 +203,39 @@ def search_package(package_name: str) -> List[Dict]:
                 similar_packages.sort(key=lambda x: x['similarity'], reverse=True)
                 results = [{'name': pkg['name']} for pkg in similar_packages[:5]]
                 return results
+            
+            # 如果没有直接找到，则搜索相关包
+            if response.status_code == 404:
+                search_query_url = f"https://pypi.org/search/?q={package_name}&page=1"
+                headers = {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+                }
+                search_response = requests.get(search_query_url, headers=headers, timeout=5)
+                
+                if search_response.status_code == 200:
+                    # 使用BeautifulSoup解析搜索结果页面
+                    try:
+                        from bs4 import BeautifulSoup
+                        soup = BeautifulSoup(search_response.text, 'html.parser')
+                        results = soup.select('a.package-snippet')
+                        related_packages = []
+                        
+                        for result in results[:5]:  # 取前5个结果
+                            name = result.select_one('.package-snippet__name').text.strip()
+                            version = result.select_one('.package-snippet__version').text.strip()
+                            description = result.select_one('.package-snippet__description').text.strip()
+                            
+                            related_packages.append({
+                                'name': name,
+                                'version': version,
+                                'summary': description,
+                                'is_suggestion': False,
+                                'original_name': package_name
+                            })
+                        
+                        return related_packages
+                    except ImportError:
+                        logger.error("无法导入BeautifulSoup，请安装: pip install beautifulsoup4")
             
             return []
         except Exception as e:
