@@ -1,0 +1,2 @@
+[console_scripts]
+pythonrun = pythonrun.main:main

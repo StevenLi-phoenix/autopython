@@ -3,12 +3,13 @@
 
 from setuptools import setup, find_packages
 import re
+import os
 
 # 从__init__.py中读取版本号
-with open("pythonrun/pythonrun/__init__.py", "r", encoding="utf-8") as f:
+with open(os.path.join("pythonrun", "__init__.py"), "r", encoding="utf-8") as f:
     version = re.search(r'__version__ = "(.*?)"', f.read()).group(1)
 
-with open("pythonrun/README.md", "r", encoding="utf-8") as fh:
+with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(

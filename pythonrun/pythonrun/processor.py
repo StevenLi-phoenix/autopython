@@ -4,6 +4,7 @@ import os
 import sys
 import tempfile
 import logging
+import subprocess
 from typing import Set, Tuple, Dict, Any, List, Optional
 import importlib.util
 
@@ -159,4 +160,15 @@ def process_file(file_path: str, run: bool = True) -> None:
     
     # 如果需要运行代码
     if run:
-        handle_main_problem(abs_path) 
+        try:
+            logger.info(f"运行脚本: {abs_path}")
+            # 构建命令行参数
+            cmd_args = sys.argv[2:] if len(sys.argv) > 2 else []
+            cmd = [sys.executable, abs_path] + cmd_args
+            
+            # 执行Python脚本
+            result = subprocess.run(cmd, check=True)
+            if result.returncode != 0:
+                logger.error(f"脚本执行失败，返回码: {result.returncode}")
+        except Exception as e:
+            logger.error(f"执行 {abs_path} 失败: {e}") 
